@@ -42,5 +42,9 @@ router.post('/link',async (req, res) => {
 
 
 
+module.exports = router;
+
+
+
 
 
