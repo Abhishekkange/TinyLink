@@ -115,9 +115,9 @@
 
                 let finalUrl = "";
                 if (data._isExists) {
-                    finalUrl = `http://localhost:3000/Visiting/${data.suggestedCode}`;
+                    finalUrl = data.suggestedCode;
                 } else {
-                    finalUrl = `http://localhost:3000/Visiting/${data.shortCode}`;
+                    finalUrl = `https://tiny-link-omega-three.vercel.app/${data.shortCode}`;
                 }
 
                 document.getElementById("shortUrlText").innerText = finalUrl;
