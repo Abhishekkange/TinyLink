@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TinyURL - Dashboard</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/a2e860f6ac.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 min-h-screen py-10">
+
+    <!-- URL Shortener Section -->
+    <div class="w-full max-w-3xl mx-auto text-center px-6 mb-16">
+        <h1 class="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-6">
+            TinyURL <span class="text-yellow-300">URL Shortener</span>
+        </h1>
+        <p class="text-white text-lg opacity-85 mb-10">
+            Paste your long URL below and convert it into a short, easy-to-share link instantly.
+        </p>
+
+        <form id="shortenForm" class="flex gap-3 mb-4">
+            <input type="url" name="longUrl" required placeholder="Enter your long URL here..."
+                class="flex-1 px-5 py-4 rounded-2xl bg-white shadow-lg outline-none text-gray-700 text-lg focus:ring-4 focus:ring-yellow-300" />
+
+            <button type="submit"
+                class="px-7 py-4 rounded-2xl bg-yellow-400 hover:bg-yellow-500 transition-all text-gray-900 font-semibold text-lg shadow-xl">
+                Shorten
+            </button>
+        </form>
+
+        <input type="text" name="customCode" placeholder="Custom short code (optional)"
+            class="w-full px-5 py-4 rounded-2xl bg-white shadow-lg outline-none text-gray-700 text-lg mb-10 focus:ring-4 focus:ring-yellow-300" />
+
+        <div id="resultBox"
+            class="hidden border-4 border-dashed border-white/60 rounded-xl px-6 py-6 text-center bg-white/10 backdrop-blur-md shadow-xl">
+            <p class="text-white text-xl font-semibold mb-3">Your Shortened URL:</p>
+            <div class="flex items-center justify-center gap-4">
+                <span id="shortUrlText" class="text-yellow-300 text-2xl font-bold"></span>
+                <button onclick="copyUrl()" class="text-white text-2xl hover:text-yellow-300 transition-all">
+                    <i id="copyIcon" class="fa-solid fa-copy"></i>
+                </button>
+            </div>
+            <p id="copiedMsg" class="text-green-300 mt-2 hidden">Copied!</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Table Section -->
+    <div class="p-10">
+        <h1 class="text-4xl font-bold mb-6 text-center text-white">All Shortened Links</h1>
+
+        <div class="overflow-x-auto shadow-lg rounded-2xl bg-white">
+            <table class="min-w-full rounded-2xl">
+                <thead>
+                    <tr class="bg-indigo-600 text-white text-lg">
+                        <th class="py-4 px-6 text-left">Original URL</th>
+                        <th class="py-4 px-6 text-center">Short Code</th>
+                        <th class="py-4 px-6 text-center">Total Clicks</th>
+                        <th class="py-4 px-6 text-center">Created</th>
+                        <th class="py-4 px-6 text-center">Updated</th>
+                        <th class="py-4 px-6 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% links.forEach(link=> { %>
+                        <tr class="border-b hover:bg-gray-100 transition">
+                            <td class="py-4 px-6 text-blue-700">
+                                <a href="<%= link.longUrl %>" target="_blank" class="hover:underline">
+                                    <%= link.longUrl %>
+                                </a>
+                            </td>
+                            <td class="py-4 px-6 text-center font-semibold text-indigo-600">
+                                <%= link.shortName %>
+                            </td>
+                            <td class="py-4 px-6 text-center font-semibold">
+                                <%= link.clickCount %>
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                <%= link.createdAt?.toLocaleString() %>
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                <%= link.lastClickedTime?.toLocaleString() || "Never" %>
+                            </td>
+                            <td class="py-4 px-6 flex gap-4 justify-center text-xl">
+                                <a href="/edit/<%= link._id %>" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <a href="/delete/<%= link._id %>" class="text-red-600 hover:text-red-800">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function copyUrl() {
+            const text = document.getElementById("shortUrlText").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById("copiedMsg").classList.remove("hidden");
+                const icon = document.getElementById("copyIcon");
+                icon.classList.replace("fa-copy", "fa-check");
+                setTimeout(() => {
+                    document.getElementById("copiedMsg").classList.add("hidden");
+                    icon.classList.replace("fa-check", "fa-copy");
+                }, 1000);
+            });
+        }
+
+        const form = document.getElementById("shortenForm");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const longUrl = document.querySelector("input[name='longUrl']").value;
+            const customCode = document.querySelector("input[name='customCode']").value;
+
+            try {
+                const response = await fetch("/api/v1/links", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ longurl: longUrl, code: customCode })
+                });
+
+                const data = await response.json();
+                let finalUrl = data._isExists ? data.suggestedCode : `${window.location.origin}/${data.shortCode}`;
+                document.getElementById("shortUrlText").innerText = finalUrl;
+                document.getElementById("resultBox").classList.remove("hidden");
+
+            } catch (error) {
+                alert("Something went wrong. Try again!");
+            }
+        });
+    </script>
+
+</body>
+
+</html>
