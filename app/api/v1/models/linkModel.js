@@ -29,6 +29,10 @@ const linkSchema = new mongoose.Schema({
   lastClickedTime: {
     type: Date,
     default:Date.now
+  },
+  isDeleted: {
+    type: Boolean,
+    default:false
   }
 });
 

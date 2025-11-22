@@ -55,11 +55,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-
-
-    
-    
-    
     // 2. Redirection API.
     router.get("/:shortName", async (req, res) => {
         try {
@@ -74,21 +69,33 @@ router.get('/', async (req, res) => {
             }
 
             else if (shortName == "healtz") {
-                res.status(200).json({ status: "ok" });
+                res.status(200).json({ status: "ok", "version": "1.0" });
+                
             }
 
             else {
                 if (!record) {
                 return res.status(404).send("Short URL not found");
-            }
-    
-            //update the count and last timestamp
-            var count = record.clickCount;
-            count = count + 1;
-            const updateRecord = await Link.findByIdAndUpdate(record._id, { "clickCount": count });
-            // Redirect user to the original long URL
-            return res.redirect(302, record.longUrl); // 302 Found (Temporary Redirect)
+                }
 
+                //check delete status of url
+                if (record.isDeleted)
+                {
+                    //return 404 page.
+                    res.status(404).render('erro');
+
+                }
+                else {
+                    //update the count and last timestamp
+                    var count = record.clickCount;
+                    count = count + 1;
+                    const updateRecord = await Link.findByIdAndUpdate(record._id, { "clickCount": count });
+                    // Redirect user to the original long URL
+                    return res.redirect(302, record.longUrl);
+
+                }
+    
+            
             }
     
             
