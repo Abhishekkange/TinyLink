@@ -14,8 +14,9 @@ app.use(cors());
 dbconnect()
 
 //ejs configuration
-app.set('view engine', 'ejs');
-app.set('views', './views');
+const path = require("path");
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 
 
