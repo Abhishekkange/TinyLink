@@ -82,7 +82,7 @@ router.get('/', async (req, res) => {
                 if (record.isDeleted)
                 {
                     //return 404 page.
-                    res.status(404).render('erro');
+                    res.status(404).render('error');
 
                 }
                 else {
