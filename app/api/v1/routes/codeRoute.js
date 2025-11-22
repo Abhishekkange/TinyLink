@@ -4,7 +4,7 @@ const Link = require('../models/linkModel')
 const mongoose = require('mongoose')
 
 
-// Details of an indivisual Link
+// Stats for a single code
 router.get('/:code', async (req, res) => {
     
     const shortName = req.params.code;

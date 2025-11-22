@@ -12,8 +12,8 @@ const { generateId, generateSuggestions } = require('../functions/generator')
 
 // API Endpoints 
 
-//1. Create a new Short URL from given URL (METHOD : POST)
-router.post('/link', async (req, res) => {
+// POST /api/links
+router.post('/links', async (req, res) => {
 
     //fecth longurl & CODE from body
     let longurl = req.body.longurl;
@@ -42,9 +42,60 @@ router.post('/link', async (req, res) => {
     }
 });
 
+//GET /api/links
+router.get('/links', async (req, res) => {
+
+    const allDocs = await Link.find({}).sort({ createdAt: -1 }); // latest first
+    res.status(200).json({ allDocs });
+
+});
+
+//GET /api/links/:code
+router.get('/links/:code', async (req, res) => {
+
+    try {
+        const code = req.params.code;
+    const doc = await Link.find({shortName:code}); // latest first
+        res.status(200).json({ doc });
+        
+    } catch (error) {
+        
+        res.status(400).json({ "Error ": error });
+    }
+
+});
+
+//DELETE /api/links/:code
+router.delete('/links/:code', async (req, res) => {
+
+    const code = req.params.code;
+    
+    try {
+
+        const result = Link.findOneAndUpdate({ shortName: code }, { isDeleted: true });
+        res.status(200).json({ "result": "deleted successfully" });
+        
+    }
+    catch (error) {
+        
+        res.status(400).json({ "Error": error });
+
+    }
+})
 
 
-//3: Dashboard API 
+
+
+
+// PAGE URL Routes
+
+
+
+
+
+
+
+// Dashboard (list,add,delete)
 router.get('/', async (req, res) => {
     try {
         const allDocs = await Link.find({}).sort({ createdAt: -1 }); // latest first
@@ -55,8 +106,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-    // 2. Redirection API.
-    router.get("/:shortName", async (req, res) => {
+// Redirect
+router.get("/:shortName", async (req, res) => {
         try {
     
             const { shortName } = req.params;
@@ -94,7 +145,6 @@ router.get('/', async (req, res) => {
                     return res.redirect(302, record.longUrl);
 
                 }
-    
             
             }
     
