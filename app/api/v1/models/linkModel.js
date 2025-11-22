@@ -21,6 +21,14 @@ const linkSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  clickCount: {
+    type: Number,
+    default:0
+  },
+  lastClickedTime: {
+    type: Date,
+    default:Date.now
   }
 });
 

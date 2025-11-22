@@ -2,45 +2,92 @@ const express = require('express');
 const router = express.Router(); 
 const Link = require('../models/linkModel')
 const mongoose = require('mongoose')
-const { generateId,suggestIds } = require('../functions/generator')
+const { generateId, generateSuggestions } = require('../functions/generator')
+
+//ejs configuration
+
+
+
 
 
 // API Endpoints 
 
 //1. Create a new Short URL from given URL (METHOD : POST)
-router.post('/link',async (req, res) => {
+router.post('/link', async (req, res) => {
 
     //fecth longurl & CODE from body
     let longurl = req.body.longurl;
     let shortCode = req.body.code;
 
     //if code not given by user then generate a random short url
-    if (shortCode == null)
-    {
+    if (shortCode == null) {
         shortCode = generateId();
 
     }
 
     //check in database if same code is availabe for any other long url
     const exists = await Link.exists({ "shortName": shortCode });
-    if (exists)
-    {
-        let suggestedCode = suggestIds();
-        return res.status(201).json({ "_isExists": true, "suggestedCode": suggestedCode });
-
+    if (exists) {
+        const similar = await generateSuggestions(shortCode);
+        return res.status(201).json({ "_isExists": true, "suggestedCode": similar });
 
     }
     else {
 
         //save longurl and its corresponding shorturl in database
-        const shortnedLink = new Link({"shortName":shortCode,"longUrl":longurl}); // Default role is trainee
+        const shortnedLink = new Link({ "shortName": shortCode, "longUrl": longurl }); // Default role is trainee
         await shortnedLink.save();
-        return res.status(201).json({ "_isExists": false, "shortCode": shortCode })  
+        return res.status(201).json({ "_isExists": false, "shortCode": shortCode })
 
     }
-})
+});
 
 
+
+//3: Dashboard API 
+router.get('/', async (req, res) => {
+    try {
+        const allDocs = await Link.find({}).sort({ createdAt: -1 }); // latest first
+        res.render("dashboard", { links: allDocs });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
+    }
+});
+
+
+
+    
+    
+    
+    // 2. Redirection API.
+    router.get("/:shortName", async (req, res) => {
+        try {
+    
+            const { shortName } = req.params;
+            const record = await Link.findOne({ shortName });
+    
+            if (shortName == null)
+            {
+                 res.render('index');
+            }
+    
+            if (!record) {
+                return res.status(404).send("Short URL not found");
+            }
+    
+            //update the count and last timestamp
+            var count = record.clickCount;
+            count = count + 1;
+            const updateRecord = await Link.findByIdAndUpdate(record._id, { "clickCount": count });
+            // Redirect user to the original long URL
+            return res.redirect(302, record.longUrl); // 302 Found (Temporary Redirect)
+    
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Server Error");
+        }
+    });
 
 module.exports = router;
 

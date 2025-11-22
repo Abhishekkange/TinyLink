@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard | Links List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2e860f6ac.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-10">
+
+    <h1 class="text-4xl font-bold mb-6 text-center text-indigo-700">All Shortened Links</h1>
+
+    <div class="overflow-x-auto shadow-lg rounded-2xl">
+        <table class="min-w-full bg-white rounded-2xl overflow-hidden">
+            <thead>
+                <tr class="bg-indigo-600 text-white text-lg">
+                    <th class="py-4 px-6 text-left">Original URL</th>
+                    <th class="py-4 px-6 text-center">Short Code</th>
+                    <th class="py-4 px-6 text-center">Total Clicks</th>
+                    <th class="py-4 px-6 text-center">Created</th>
+                    <th class="py-4 px-6 text-center">Updated</th>
+                    <th class="py-4 px-6 text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% links.forEach(link=> { %>
+                    <tr class="border-b hover:bg-gray-100 transition">
+                        <td class="py-4 px-6 text-blue-700">
+                            <a href="<%= link.longUrl %>" target="_blank" class="hover:underline">
+                                <%= link.longUrl %>
+                            </a>
+                        </td>
+
+                        <td class="py-4 px-6 text-center font-semibold text-indigo-600">
+                            <%= link.shortName %>
+                        </td>
+
+                        <td class="py-4 px-6 text-center font-semibold">
+                            <%= link.clickCount %>
+                        </td>
+
+                        <td class="py-4 px-6 text-center">
+                            <%= link.createdAt.toLocaleString() %>
+                        </td>
+
+                        <td class="py-4 px-6 text-center">
+                            <%= link.lastClickedTime.toLocaleString() %>
+                        </td>
+
+                        <td class="py-4 px-6 flex gap-4 justify-center text-xl">
+                            <a href="/edit/<%= link._id %>" class="text-blue-600 hover:text-blue-800">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a href="/delete/<%= link._id %>" class="text-red-600 hover:text-red-800">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
