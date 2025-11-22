@@ -99,7 +99,7 @@ router.delete('/links/:code', async (req, res) => {
 // Dashboard (list,add,delete)
 router.get('/', async (req, res) => {
     try {
-        const allDocs = await Link.find({}).sort({ createdAt: -1 }); // latest first
+        const allDocs = await Link.find({ isDeleted: false }).sort({ createdAt: -1 });
         res.render("final", { links: allDocs });
     } catch (err) {
         console.error(err);

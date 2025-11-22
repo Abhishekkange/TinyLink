@@ -180,6 +180,7 @@
                 if (res.status === 200) {
                     showToast("Successfully deleted!", "success");
                     btn.closest("tr").remove();
+                    location.reload(true);
                 } else {
                     showToast("Error deleting link!", "error");
                 }
