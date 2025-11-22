@@ -103,18 +103,20 @@
                                 <%= link.lastClickedTime ? link.lastClickedTime.toLocaleString() : 'N/A' %>
                             </td>
 
-                            <td class="py-4 px-6 flex gap-4 justify-center text-xl">
+                            <td class="py-4 px-6 flex gap-4 justify-center text-lg font-semibold">
 
                                 <button onclick="updateLink('<%= link.shortName %>')"
-                                    class="text-blue-600 hover:text-blue-800">
-                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    class="text-green-600 hover:text-green-800 underline">
+                                    Update
                                 </button>
 
                                 <button onclick="deleteLink('<%= link.shortName %>', this)"
-                                    class="text-red-600 hover:text-red-800">
-                                    <i class="fa-solid fa-trash"></i>
+                                    class="text-red-600 hover:text-red-800 underline">
+                                    Delete
                                 </button>
+
                             </td>
+
                         </tr>
                         <% }) %>
                 </tbody>
