@@ -29,7 +29,7 @@ router.post('/link', async (req, res) => {
     const exists = await Link.exists({ "shortName": shortCode });
     if (exists) {
         const similar = await generateSuggestions(shortCode);
-        return res.status(201).json({ "_isExists": true, "suggestedCode": similar });
+        return res.status(409).json({ "_isExists": true, "suggestedCode": similar });
 
     }
     else {
@@ -71,6 +71,10 @@ router.get('/', async (req, res) => {
             if (shortName == "create")
             {
                  res.render('index');
+            }
+
+            else if (shortName == "healtz") {
+                res.status(200).json({ status: "ok" });
             }
 
             else {
