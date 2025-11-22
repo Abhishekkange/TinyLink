@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
             const { shortName } = req.params;
             const record = await Link.findOne({ shortName });
     
-            if (shortName == null)
+            if (shortName == "create")
             {
                  res.render('index');
             }
