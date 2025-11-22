@@ -77,7 +77,7 @@ router.get('/', async (req, res) => {
                 if (!record) {
                 return res.status(404).send("Short URL not found");
                 }
-
+                console.log(record);
                 //check delete status of url
                 if (record.isDeleted)
                 {
