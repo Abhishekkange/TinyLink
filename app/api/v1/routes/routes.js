@@ -66,13 +66,15 @@ router.get('/', async (req, res) => {
     
             const { shortName } = req.params;
             const record = await Link.findOne({ shortName });
+            console.log(shortName);
     
             if (shortName == "create")
             {
                  res.render('index');
             }
-    
-            if (!record) {
+
+            else {
+                if (!record) {
                 return res.status(404).send("Short URL not found");
             }
     
@@ -82,6 +84,10 @@ router.get('/', async (req, res) => {
             const updateRecord = await Link.findByIdAndUpdate(record._id, { "clickCount": count });
             // Redirect user to the original long URL
             return res.redirect(302, record.longUrl); // 302 Found (Temporary Redirect)
+
+            }
+    
+            
     
         } catch (error) {
             console.error(error);
