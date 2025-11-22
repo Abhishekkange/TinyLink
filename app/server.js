@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-require('dotenv').config();
+// require('dotenv').config();
 const dbconnect = require('./api/v1/db/db')
 app.use(express.json());
 const axios = require('axios')
