@@ -72,7 +72,8 @@ router.delete('/links/:code', async (req, res) => {
     
     try {
 
-        const result = Link.findOneAndUpdate({ shortName: code }, { isDeleted: true });
+        const result = await Link.findOneAndUpdate({ shortName: code }, { isDeleted: true });
+        console.log(result);
         res.status(200).json({ "result": "deleted successfully" });
         
     }
